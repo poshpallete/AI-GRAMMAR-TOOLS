@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - AI Writing System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/style.css">
+    <script src="config.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(270deg, #6a11cb, #ff4b2b);
+            background-size: 400% 400%;
+            animation: gradientMove 10s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0% {background-position: 0%;}
+            50% {background-position: 100%;}
+            100% {background-position: 0%;}
+        }
+
+        .login-box {
+            background: rgba(0,0,0,0.8);
+            padding: 40px;
+            border-radius: 15px;
+            width: 320px;
+            text-align: center;
+            animation: fadeUp 0.8s ease;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 25px;
+            background: #ffd700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes fadeUp {
+            from {opacity: 0; transform: translateY(30px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-box">
+    <h2>🔐 Login</h2>
+
+    <!-- EMAIL INPUT -->
+    <input type="email" id="email" placeholder="Enter your email" required>
+
+    <button class="btn" onclick="sendOTP()">Send OTP</button>
+
+    <!-- OTP SECTION -->
+    <div id="otpSection" class="hidden">
+        <input type="text" id="otp" placeholder="Enter OTP">
+        <button class="btn" onclick="verifyOTP()">Verify & Login</button>
+    </div>
+</div>
+
+<script>
+const API = window.API_BASE_URL;
+
+// SEND OTP
+function sendOTP() {
+    let email = document.getElementById("email").value;
+
+    if (!email) {
+        alert("Enter email first");
+        return;
+    }
+
+    fetch(API + "/send-otp", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ email: email })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "sent") {
+            alert("OTP sent to email");
+            document.getElementById("otpSection").classList.remove("hidden");
+        } else {
+            alert("Failed to send OTP");
+        }
+    })
+    .catch(() => alert("Server error"));
+}
+
+// VERIFY OTP
+function verifyOTP() {
+    let email = document.getElementById("email").value;
+    let otp = document.getElementById("otp").value;
+
+    fetch(API + "/verify-otp", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ email: email, otp: otp })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "success") {
+
+            // 🔐 SAVE SESSION
+            localStorage.setItem("user", email);
+
+            alert("Login Successful");
+            window.location.href = "app.html";
+
+        } else {
+            alert("Invalid OTP");
+        }
+    })
+    .catch(() => alert("Server error"));
+}
+</script>
+
+</body>
+</html>

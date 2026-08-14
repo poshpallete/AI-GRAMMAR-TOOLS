@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Tools - Smart Features</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="css/style.css">
+<script src="config.js"></script>
+
+<script>
+if (!localStorage.getItem("user")) {
+    window.location.href = "login.html";
+}
+</script>
+
+<style>
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+    background: linear-gradient(270deg,#6a11cb,#ff4b2b);
+    background-size: 400% 400%;
+    animation: gradientMove 10s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% {background-position: 0%;}
+    50% {background-position: 100%;}
+    100% {background-position: 0%;}
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+}
+
+.nav-btn {
+    margin-left: 10px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: none;
+    background: #ffd700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.nav-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px #ffd700;
+}
+
+.container {
+    width: 90%;
+    max-width: 800px;
+    margin: auto;
+    margin-top: 40px;
+}
+
+textarea {
+    width: 100%;
+    height: 120px;
+    border-radius: 10px;
+    padding: 12px;
+    border: none;
+    margin-top: 15px;
+    box-sizing: border-box;
+    color: #333;
+}
+
+.btn {
+    margin: 10px 5px;
+    padding: 10px 18px;
+    border-radius: 25px;
+    border: none;
+    background: #ffd700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #ffd700;
+}
+
+.output {
+    margin-top: 25px;
+    padding: 20px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    text-align: left;
+    opacity: 1;
+    min-height: 60px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <div><b>Smart AI Tools</b></div>
+    <div>
+        <button class="nav-btn" onclick="goTo('app.html')">Home</button>
+        <button class="nav-btn" onclick="goTo('dashboard.html')">Dashboard</button>
+        <button class="nav-btn" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<div class="container">
+
+    <h2>Enhance Your Writing with AI</h2>
+
+    <textarea id="textInput" placeholder="Enter your text..."></textarea>
+
+    <div>
+        <button class="btn" onclick="makeNotes()">Notes</button>
+        <button class="btn" onclick="improve()">Improve</button>
+        <button class="btn" onclick="simplifyText()">Simplify</button>
+        <button class="btn" onclick="expandText()">Expand</button>
+        <button class="btn" onclick="buildParagraph()">Paragraph</button>
+    </div>
+
+    <div id="output" class="output">
+        Results will appear here...
+    </div>
+
+</div>
+
+<script>
+
+var API = window.API_BASE_URL;
+
+function goTo(page) { window.location.href = page; }
+function logout() { localStorage.removeItem("user"); window.location.href = "login.html"; }
+
+function getText() {
+    var text = document.getElementById("textInput").value;
+    if (!text.trim()) { alert("Enter text first"); return null; }
+    return text;
+}
+
+function setOutput(html) {
+    document.getElementById("output").innerHTML = html;
+}
+
+function makeNotes() {
+    var text = getText(); if (!text) return;
+    setOutput("Generating notes with AI... Please wait...");
+    fetch(API + "/make-notes", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({text:text}) })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { setOutput("<h3>Notes</h3><p>" + (d.notes || "Error") + "</p>"); })
+    .catch(function() { setOutput("Backend not reachable. Run: python app.py"); });
+}
+
+function improve() {
+    var text = getText(); if (!text) return;
+    setOutput("Improving with AI... Please wait...");
+    fetch(API + "/improve-assignment", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({text:text}) })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { setOutput("<h3>Improved</h3><p>" + (d.improved || "Error") + "</p>"); })
+    .catch(function() { setOutput("Backend not reachable. Run: python app.py"); });
+}
+
+function simplifyText() {
+    var text = getText(); if (!text) return;
+    setOutput("Simplifying with AI... Please wait...");
+    fetch(API + "/simplify", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({text:text}) })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { setOutput("<h3>Simplified</h3><p>" + (d.result || "Error") + "</p>"); })
+    .catch(function() { setOutput("Backend not reachable. Run: python app.py"); });
+}
+
+function expandText() {
+    var text = getText(); if (!text) return;
+    setOutput("Expanding with AI... Please wait...");
+    fetch(API + "/expand", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({text:text}) })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { setOutput("<h3>Expanded</h3><p>" + (d.result || "Error") + "</p>"); })
+    .catch(function() { setOutput("Backend not reachable. Run: python app.py"); });
+}
+
+function buildParagraph() {
+    var text = getText(); if (!text) return;
+    setOutput("Building paragraph with AI... Please wait...");
+    fetch(API + "/build-paragraph", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({text:text}) })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { setOutput("<h3>Paragraph</h3><p>" + (d.paragraph || "Error") + "</p>"); })
+    .catch(function() { setOutput("Backend not reachable. Run: python app.py"); });
+}
+
+</script>
+
+</body>
+</html>

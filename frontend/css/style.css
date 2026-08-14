@@ -1,0 +1,234 @@
+/* =========================================
+GLOBAL RESET
+========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+    overflow-x: hidden;
+}
+
+/* =========================================
+ANIMATED BACKGROUND (PREMIUM)
+========================================= */
+body {
+    background: linear-gradient(-45deg, #6a11cb, #ff4b2b, #2575fc, #6a11cb);
+    background-size: 400% 400%;
+    animation: gradientFlow 12s ease infinite;
+}
+
+@keyframes gradientFlow {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* =========================================
+NAVBAR (GLASS EFFECT)
+========================================= */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    animation: fadeDown 0.8s ease;
+}
+
+/* =========================================
+BUTTONS (GLOW + INTERACTION)
+========================================= */
+.btn, .nav-btn {
+    background: linear-gradient(45deg, #ffd700, #ffb347);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.btn:hover, .nav-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255,215,0,0.8);
+}
+
+/* =========================================
+CARDS (GLASSMORPHISM)
+========================================= */
+.card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    border-radius: 15px;
+    padding: 20px;
+    transition: 0.3s;
+    animation: fadeUp 0.8s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 0 25px rgba(255,255,255,0.2);
+}
+
+/* =========================================
+GRID LAYOUT
+========================================= */
+.grid {
+    display: grid;
+    gap: 20px;
+    padding: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+/* =========================================
+TEXTAREA + INPUT
+========================================= */
+textarea, input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    margin-top: 10px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+/* =========================================
+OUTPUT BOX
+========================================= */
+.output {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.4);
+    animation: fadeUp 0.6s ease;
+}
+
+/* =========================================
+DASHBOARD STATS
+========================================= */
+.stats {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.stat-box {
+    width: 180px;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 12px;
+    text-align: center;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    transition: 0.3s;
+}
+
+.stat-box:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+/* =========================================
+CHART GRID (PRO DASHBOARD)
+========================================= */
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+/* =========================================
+CHART CONTAINER (ADVANCED LOOK)
+========================================= */
+canvas {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 10px;
+}
+
+/* =========================================
+TABLE (PRO LOOK)
+========================================= */
+table {
+    width: 100%;
+    margin-top: 15px;
+    border-collapse: collapse;
+}
+
+th {
+    background: rgba(255,255,255,0.1);
+    padding: 12px;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* =========================================
+LIST (AI SUGGESTIONS)
+========================================= */
+ul {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+li {
+    margin-bottom: 8px;
+    animation: fadeUp 0.5s ease;
+}
+
+/* =========================================
+ANIMATIONS (UNIQUE)
+========================================= */
+@keyframes fadeUp {
+    from {opacity: 0; transform: translateY(40px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes fadeDown {
+    from {opacity: 0; transform: translateY(-40px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* FLOATING EFFECT */
+@keyframes float {
+    0% {transform: translateY(0px);}
+    50% {transform: translateY(-10px);}
+    100% {transform: translateY(0px);}
+}
+
+/* APPLY FLOAT TO CARDS */
+.card:nth-child(odd) {
+    animation: float 5s ease-in-out infinite;
+}
+
+/* =========================================
+SCROLLBAR (PREMIUM)
+========================================= */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ffd700;
+    border-radius: 10px;
+}
+
+/* =========================================
+RESPONSIVE
+========================================= */
+@media (max-width: 600px) {
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+    }
+}

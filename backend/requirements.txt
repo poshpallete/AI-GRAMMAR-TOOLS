@@ -1,0 +1,8 @@
+Flask
+flask-cors
+pytesseract
+Pillow
+language-tool-python
+transformers
+sentencepiece
+torch

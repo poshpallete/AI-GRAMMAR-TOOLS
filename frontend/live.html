@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Live Writing - AI System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="css/style.css">
+<script src="config.js"></script>
+
+<script>
+// 🔒 LOGIN PROTECTION
+if (!localStorage.getItem("user")) {
+    window.location.href = "login.html";
+}
+</script>
+
+<style>
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+    background: linear-gradient(270deg,#6a11cb,#ff4b2b);
+    background-size: 400% 400%;
+    animation: gradientMove 10s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% {background-position: 0%;}
+    50% {background-position: 100%;}
+    100% {background-position: 0%;}
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+}
+
+.nav-btn {
+    margin-left: 10px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: none;
+    background: #ffd700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.nav-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px #ffd700;
+}
+
+/* MAIN */
+.container {
+    text-align: center;
+    margin-top: 40px;
+    animation: fadeUp 0.8s ease;
+}
+
+/* VIDEO */
+video {
+    width: 350px;
+    border-radius: 15px;
+    margin-top: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* BUTTONS */
+.btn {
+    margin: 10px;
+    padding: 12px 25px;
+    border-radius: 25px;
+    border: none;
+    background: #ffd700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #ffd700;
+}
+
+/* OUTPUT */
+.output {
+    margin: 30px auto;
+    width: 80%;
+    max-width: 700px;
+    padding: 20px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    text-align: left;
+    animation: fadeUp 0.6s ease;
+}
+
+/* ANIMATION */
+@keyframes fadeUp {
+    from {opacity: 0; transform: translateY(30px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div><b>📹 Live Writing AI</b></div>
+
+    <div>
+        <button class="nav-btn" onclick="goTo('app.html')">Home</button>
+        <button class="nav-btn" onclick="goTo('dashboard.html')">Dashboard</button>
+        <button class="nav-btn" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+    <h2>Real-Time Handwriting Detection</h2>
+
+    <video id="camera" autoplay></video>
+
+    <br>
+
+    <button class="btn" onclick="startCamera()">Start Camera</button>
+    <button class="btn" onclick="captureFrame()">Analyze</button>
+    <button class="btn" onclick="stopCamera()">Stop</button>
+
+    <div id="output" class="output">
+        Results will appear here...
+    </div>
+
+</div>
+
+<script>
+
+const API = window.API_BASE_URL;
+let stream = null;
+
+// NAVIGATION
+function goTo(page) {
+    window.location.href = page;
+}
+
+// LOGOUT
+function logout() {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+}
+
+// START CAMERA
+function startCamera() {
+    navigator.mediaDevices.getUserMedia({ video: true })
+    .then(s => {
+        stream = s;
+        document.getElementById("camera").srcObject = s;
+    })
+    .catch(() => alert("Camera access denied"));
+}
+
+// STOP CAMERA
+function stopCamera() {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        document.getElementById("camera").srcObject = null;
+    }
+}
+
+// CAPTURE FRAME
+function captureFrame() {
+
+    let video = document.getElementById("camera");
+    let canvas = document.createElement("canvas");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0);
+
+    let imageData = canvas.toDataURL("image/png");
+
+    let output = document.getElementById("output");
+    output.innerHTML = "🧠 Processing...";
+
+    fetch(API + "/analyze-live", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ image: imageData })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.error) {
+            output.innerHTML = "<p>Error: " + data.error + "</p>";
+            return;
+        }
+        let errorsHtml = "";
+        if (data.errors && data.errors.length > 0) {
+            errorsHtml = "<ul>" + data.errors.map(function(e){ return "<li>"+e+"</li>"; }).join("") + "</ul>";
+        }
+        let suggestionsHtml = "";
+        if (data.suggestions && data.suggestions.length > 0) {
+            suggestionsHtml = "<ul>" + data.suggestions.map(function(s){ return "<li>"+s+"</li>"; }).join("") + "</ul>";
+        }
+
+        output.innerHTML =
+            "<h3>Extracted Text</h3>" +
+            "<p>" + (data.extracted || "No text detected") + "</p>" +
+            "<h3>Highlighted Errors</h3>" +
+            "<p>" + (data.highlighted || "No errors") + "</p>" +
+            errorsHtml +
+            "<h3>Corrected Text</h3>" +
+            "<p>" + (data.corrected || "") + "</p>" +
+            "<h3>Good Version</h3>" +
+            "<p>" + (data.good_sentence || "") + "</p>" +
+            "<h3>Better Version</h3>" +
+            "<p>" + (data.better_sentence || "") + "</p>" +
+            "<h3>Best Version</h3>" +
+            "<p>" + (data.best_sentence || "") + "</p>" +
+            "<h3>AI Suggestions</h3>" +
+            (suggestionsHtml || "<p>No suggestions</p>");
+    })
+    .catch(() => {
+        output.innerHTML = "Failed to analyze. Make sure backend is running.";
+    });
+}
+
+</script>
+
+</body>
+</html>
